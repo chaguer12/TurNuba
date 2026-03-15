@@ -1,0 +1,176 @@
+classDiagram
+%% ========================
+%% Multi-Tenant / SaaS Core
+%% ========================
+class Salon {
+  +id
+  +name
+  +address
+  +phone
+  +is_active
+  +created_at
+}
+
+class Subscription {
+  +id
+  +salon_id
+  +plan_id
+  +start_date
+  +end_date
+  +status
+}
+
+class Plan {
+  +id
+  +name
+  +duration_months
+  +price
+}
+
+class Payment {
+  +id
+  +subscription_id
+  +provider
+  +transaction_id
+  +amount
+  +status
+  +paid_at
+}
+
+%% ========================
+%% Staff / Users
+%% ========================
+class User {
+  +id
+  +salon_id
+  +name
+  +email
+  +password
+  +role
+}
+
+class Barber {
+  +id
+  +user_id
+  +salon_id
+  +is_active
+}
+
+%% ========================
+%% Customers / Visits
+%% ========================
+class Customer {
+  +id
+  +salon_id
+  +name
+  +phone
+  +created_at
+}
+
+class Visit {
+  +id
+  +salon_id
+  +barber_id
+  +customer_id
+  +start_time
+  +end_time
+  +status
+}
+
+class VisitService {
+  +id
+  +visit_id
+  +service_id
+  +price
+}
+
+%% ========================
+%% Services
+%% ========================
+class Service {
+  +id
+  +salon_id
+  +name
+  +price
+  +duration_minutes
+  +is_active
+}
+
+class BarberService {
+  +id
+  +barber_id
+  +service_id
+}
+
+%% ========================
+%% Queue System
+%% ========================
+class Queue {
+  +id
+  +salon_id
+  +barber_id
+  +name
+  +is_active
+}
+
+class QueueTicket {
+  +id
+  +queue_id
+  +customer_id
+  +status
+  +position
+  +created_at
+}
+
+class Appointment {
+  +id
+  +salon_id
+  +barber_id
+  +customer_id
+  +appointment_time
+  +status
+}
+
+%% ========================
+%% Notifications
+%% ========================
+class Notification {
+  +id
+  +salon_id
+  +customer_id
+  +type
+  +message
+  +status
+}
+
+%% ========================
+%% Relationships
+%% ========================
+Salon "1" --> "*" User
+Salon "1" --> "*" Barber
+Salon "1" --> "*" Customer
+Salon "1" --> "*" Service
+Salon "1" --> "*" Queue
+Salon "1" --> "1" Subscription
+Salon "1" --> "*" Notification
+
+Plan "1" --> "*" Subscription
+Subscription "1" --> "*" Payment
+
+User "1" --> "0..1" Barber
+
+Barber "1" --> "*" Queue
+Barber "1" --> "*" Appointment
+Barber "1" --> "*" Visit
+Barber "1" --> "*" BarberService
+
+Customer "1" --> "*" QueueTicket
+Customer "1" --> "*" Appointment
+Customer "1" --> "*" Visit
+Customer "1" --> "*" Notification
+
+Queue "1" --> "*" QueueTicket
+
+Visit "1" --> "*" VisitService
+Service "1" --> "*" VisitService
+Service "1" --> "*" BarberService
